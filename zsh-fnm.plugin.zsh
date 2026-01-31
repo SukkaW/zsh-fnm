@@ -10,9 +10,13 @@ function zsh_fnm() {
 if (( $+commands[fnm] )); then
   # clear fnm per-session folders
   # trap "[[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}" EXIT
-  _sukka_fnm_cleanup_multishell_path() {
-    [[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}
-  }
+  # _sukka_fnm_cleanup_multishell_path() {
+  #   if (( ! $ZSH_SUBSHELL )); then
+  #     return
+  #   fi
+
+  #   [[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}
+  # }
 
   autoload -Uz add-zsh-hook
   add-zsh-hook zshexit _sukka_fnm_cleanup_multishell_path
