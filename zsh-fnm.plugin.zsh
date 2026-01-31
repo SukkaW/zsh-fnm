@@ -9,7 +9,13 @@ function zsh_fnm() {
 # detect if fnm is installed
 if (( $+commands[fnm] )); then
   # clear fnm per-session folders
-  trap "[[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}" EXIT
+  # trap "[[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}" EXIT
+  _sukka_fnm_cleanup_multishell_path() {
+    [[ -v FNM_MULTISHELL_PATH && ${#FNM_MULTISHELL_PATH} -gt 0 ]] && rm -rf ${FNM_MULTISHELL_PATH}
+  }
+
+  autoload -Uz add-zsh-hook
+  add-zsh-hook zshexit _sukka_fnm_cleanup_multishell_path
 
   # fnm upgrade commands
   function fnm() {
