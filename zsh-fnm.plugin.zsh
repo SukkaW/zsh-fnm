@@ -46,7 +46,7 @@ EOF
       fi
 
       # If no argument provided, collect all installed major versions and upgrade each
-      if [[ -z $2 ]]; then
+      if (( ! $+2 )); then
         local -aU majors
 
         local fnm_ls_output_lines=("${(f)$(command fnm ls)}")
@@ -153,7 +153,7 @@ EOF
       command fnm uninstall $version
     done
 
-    if [[ -z $remote_latest_version ]] || (( ! $keep_latest )); then
+    if (( ( ! $+remote_latest_version ) || ( ! $keep_latest ) )); then
       command fnm install "$major"
     else
       echo "[*] Skipping install: latest version $remote_latest_version already installed"
