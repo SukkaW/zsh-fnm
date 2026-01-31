@@ -27,7 +27,13 @@ plugins=(
 )
 ```
 
-3. Start a new terminal session.
+3. Append `zsh_fnm` to the end of your `.zshrc` (or anywhere after your fnm is already initialized) to initialize this plugin:
+
+```bash
+zsh_fnm
+```
+
+4. Start a new terminal session.
 
 ### Antigen
 

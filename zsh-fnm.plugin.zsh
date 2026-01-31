@@ -4,6 +4,8 @@
 # Homepage: https://github.com/SukkaW/zsh-fnm
 # License: MIT
 
+function zsh_fnm() {
+
 # detect if fnm is installed
 if (( $+commands[fnm] )); then
   # clear fnm per-session folders
@@ -12,9 +14,9 @@ if (( $+commands[fnm] )); then
   # fnm upgrade commands
   function fnm() {
     if [[ $1 == "upgrade" ]]; then
-        # Show help if requested
-        if [[ $2 == "help" || $2 == "-h" || $2 == "--help" ]]; then
-          cat <<'EOF'
+      # Show help if requested
+      if [[ $2 == "help" || $2 == "-h" || $2 == "--help" ]]; then
+        cat <<'EOF'
 Usage:
   fnm upgrade [MAJOR]
   fnm upgrade help
@@ -34,41 +36,41 @@ Examples:
 ---------------------
 zsh-fnm (https://github.com/SukkaW/zsh-fnm), An oh-my-zsh plugin that provides enhancement to the Node.js version manager "fnm".
 EOF
-          return 0
+        return 0
+      fi
+
+      # If no argument provided, collect all installed major versions and upgrade each
+      if [[ -z $2 ]]; then
+        local -aU majors
+
+        local fnm_ls_output_lines=("${(f)$(command fnm ls)}")
+        local pattern_match_version_all="* v*"
+
+        local line=""
+        for LINE in "${fnm_ls_output_lines[@]}"; do
+          line=${LINE}
+          if (( $line[(I)$pattern_match_version_all] )); then
+            local ver=${${${line#* v}%% *}%% default}
+            local major=${ver%%.*}
+            (( ${#major} )) && majors+=${major}
+          fi
+        done
+
+        if (( ${#majors} == 0 )); then
+          echo "[!] No upgradable versions found."
+          return 1
         fi
 
-        # If no argument provided, collect all installed major versions and upgrade each
-        if [[ -z $2 ]]; then
-            local -aU majors
+        for major in ${majors[@]}; do
+          _sukka_fnm_upgrade_single_major $major
+          echo "" # newline between majors
+        done
 
-            local fnm_ls_output_lines=("${(f)$(command fnm ls)}")
-            local pattern_match_version_all="* v*"
-
-            local line=""
-            for LINE in "${fnm_ls_output_lines[@]}"; do
-                line=${LINE}
-                if (( $line[(I)$pattern_match_version_all] )); then
-                    local ver=${${${line#* v}%% *}%% default}
-                    local major=${ver%%.*}
-                    (( ${#major} )) && majors+=${major}
-                fi
-            done
-
-            if (( ${#majors} == 0 )); then
-                echo "[!] No upgradable versions found."
-                return 1
-            fi
-
-            for major in ${majors[@]}; do
-                _sukka_fnm_upgrade_single_major $major
-                echo "" # newline between majors
-            done
-
-            command fnm use
-        else
-            _sukka_fnm_upgrade_single_major $2
-            command fnm use
-        fi
+        command fnm use
+      else
+        _sukka_fnm_upgrade_single_major $2
+        command fnm use
+      fi
     else
       command fnm "$@"
     fi
@@ -168,4 +170,7 @@ EOF
       command fnm alias $alias_target default
     fi
   }
+
 fi
+
+}
